@@ -9,7 +9,6 @@ env/
 
 #Tests
 .pytest_cache/
-*.html
 tests/
 
 
