@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+		<head>
+		<title>Manage Records</title>
+		<style>
+		.styled-table {
+					border-collapse: collapse;
+					margin: 25px 0;
+					font-size: 0.9em;
+					font-family: sans-serif;
+					min-width: 400px;
+					box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+		}
+
+		.styled-table thead tr {
+			background-color: #0f8580;
+			color: #ffffff;
+			text-align: left;
+		}
+
+		.styled-table th,
+		.styled-table td {
+			padding: 12px 15px;
+		}
+
+
+		.styled-table tbody tr {
+			border-bottom: 1px solid #dddddd;
+		}
+
+		.styled-table tbody tr:nth-of-type(even) {
+			background-color: #f3f3f3;
+		}
+
+		.styled-table tbody tr:last-of-type {
+			border-bottom: 2px solid #009879;
+		}
+
+		</style>
+		<script>
+				function setDate() {document.getElementById('date').valueAsDate = new Date()};
+				window.onload = setDate;
+		</script>
+		</head>
+		<body>
+		<h2>Insert Record</h2>
+		<hr>
+		<form method=post>
+		<table class="styled-table">
+				<thead>
+				<tr>
+				<th>Type</th>
+				<th>Description</th>
+				<th>Date</th>
+				<th>Amount</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr>
+				<td><input type="" name="type" id="type"></td>
+				<td><input type="text" name="description" id="description"></td>
+				<td><input type="number" name="amount" id="amount"></td>
+				<td><input type="date" name="date" id="date"></td>
+				</tr>
+				</tbody>
+		</table>
+		<table>
+				<td><input type="password"></td>
+				<td><input type="submit" value="register"></td>
+		</table>
+		</form>
+		</body>
+</html>
