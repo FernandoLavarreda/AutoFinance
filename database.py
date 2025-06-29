@@ -58,12 +58,10 @@ def insert(cursor:sql.Cursor, records:list[Record]):
     return
 
 
-def delete(cursor:sql.Cursor, date:str, type_:str, description:str=""):
-    types = get_types(cursor)
-    if type_ not in types:
-        return False
-    cursor.execute("DELETE FROM records WHERE records.date=? AND type=? AND description LIKE '%' ||?|| '%';", (date, types[type_], description))
-    return True
+def delete(cursor:sql.Cursor, **kwargs):
+    pred, params = apply_filters(cursor=cursor, **kwargs)
+    cursor.execute(f"DELETE FROM records {pred};", params)
+    return 
 
 
 def load(data:Iterable[str], types:dict[str, int], delimiter:str=",")->list[Record]:
@@ -143,7 +141,16 @@ def type_predicate(types:dict, type_:str=""):
     return "", params
 
 
-def apply_filters(*, cursor:sql.Cursor=None, select:str="", type_:str="", start:datetime=None, end:datetime=None):
+def description_predicate(description:str=""):
+    params = []
+    if description:
+        predicate = f"description LIKE '%' ||?|| '%'"
+        params.append(description)
+        return predicate, params
+    return "", params
+
+
+def apply_filters(*, cursor:sql.Cursor=None, select:str="", type_:str="", description:str="", start:datetime=None, end:datetime=None):
     if cursor:
         types = get_types(cursor)
     else:
@@ -151,8 +158,9 @@ def apply_filters(*, cursor:sql.Cursor=None, select:str="", type_:str="", start:
     se_pred, _ = select_predicate(select)
     date_pred, date_params = date_predicate(start, end)
     typ_pred, typ_params  = type_predicate(types, type_)
-    predicate = [pred for pred in (se_pred, date_pred, typ_pred) if pred]
-    params = date_params+typ_params
+    desc_pred, desc_params  = description_predicate(description)
+    predicate = [pred for pred in (se_pred, date_pred, typ_pred, desc_pred) if pred]
+    params = date_params+typ_params+desc_params
     if predicate:
         predicate = "WHERE "+" AND ".join(predicate)
     else:
@@ -169,6 +177,53 @@ def cumulative(cursor, **kwargs):
 def sum_sign(cursor, **kwargs):
     pred, params = apply_filters(cursor=cursor, **kwargs)
     total = cursor.execute(f"SELECT SUM(amount) FROM records {pred};", params)
+    return list(total)[0][0]
+    
+    
+def get_max(cursor, **kwargs):
+    pred, params = apply_filters(cursor=cursor, **kwargs)
+    total = cursor.execute(f"SELECT amount,types.type,description,date FROM records LEFT JOIN types ON records.type=types.id {pred} ORDER BY amount DESC LIMIT 1;", params)
     return list(total)
     
+
+def get_min(cursor, **kwargs):
+    pred, params = apply_filters(cursor=cursor, **kwargs)
+    total = cursor.execute(f"SELECT amount,types.type,description,date FROM records LEFT JOIN types ON records.type=types.id {pred} ORDER BY amount ASC LIMIT 1;", params)
+    return list(total)
     
+
+def get_avg(cursor, **kwargs):
+    pred, params = apply_filters(cursor=cursor, **kwargs)
+    total = cursor.execute(f"SELECT SUM(amount)/COUNT(amount) FROM records {pred};", params)
+    return list(total)[0][0]
+
+
+def get_var(cursor, **kwargs):
+    pred, params = apply_filters(cursor=cursor, **kwargs)
+    total = cursor.execute(f"SELECT SUM(pow(amount,2))/COUNT(amount)-pow(SUM(amount)/COUNT(amount),2) FROM records {pred};", params)
+    return list(total)[0][0]
+
+
+def get_std(cursor, **kwargs):
+    pred, params = apply_filters(cursor=cursor, **kwargs)
+    total = cursor.execute(f"SELECT sqrt(SUM(pow(amount,2))/COUNT(amount)-pow(SUM(amount)/COUNT(amount),2)) FROM records {pred};", params)
+    return list(total)[0][0]
+
+
+def get_median(cursor, **kwargs):
+    pred, params = apply_filters(cursor=cursor, **kwargs)
+    total = cursor.execute(f"SELECT COUNT(amount) FROM records {pred};", params)
+    total = list(total)[0][0]
+    if total:
+        if total%2:
+            mid = total//2
+            total = list(cursor.execute(f"SELECT amount FROM records {pred} LIMIT 1 OFFSET ?;", params+[mid,]))[0][0]
+        else:
+            mid1 = total//2-1
+            mid2 = total//2
+            m1 = list(cursor.execute(f"SELECT amount FROM records {pred} LIMIT 1 OFFSET ?;", params+[mid1,]))[0][0]
+            m2 = list(cursor.execute(f"SELECT amount FROM records {pred} LIMIT 1 OFFSET ?;", params+[mid2,]))[0][0]
+            total = (m1+m2)/2
+    else:
+        total = None
+    return total
