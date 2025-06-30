@@ -168,10 +168,21 @@ def apply_filters(*, cursor:sql.Cursor=None, select:str="", type_:str="", descri
     return predicate, params
 
 
-def cumulative(cursor, **kwargs):
+def daily_flow(cursor, **kwargs):
     pred, params = apply_filters(cursor=cursor, **kwargs)
     total = cursor.execute(f"SELECT date(records.date),SUM(amount) FROM records {pred} GROUP BY records.date ORDER BY date(records.date);", params)
     return list(total)
+
+
+def cumulative(cursor, **kwargs):
+    records = daily_flow(cursor, **kwargs)
+    acumulated = []
+    if records:
+        acumulated.append(records[0])
+        for record in records[1:]:
+            updated = (record[0], record[1]+acumulated[-1][1])
+            acumulated.append(updated)
+    return acumulated
 
 
 def sum_sign(cursor, **kwargs):
@@ -217,12 +228,12 @@ def get_median(cursor, **kwargs):
     if total:
         if total%2:
             mid = total//2
-            total = list(cursor.execute(f"SELECT amount FROM records {pred} LIMIT 1 OFFSET ?;", params+[mid,]))[0][0]
+            total = list(cursor.execute(f"SELECT amount FROM records {pred} ORDER BY amount LIMIT 1 OFFSET ?;", params+[mid,]))[0][0]
         else:
             mid1 = total//2-1
             mid2 = total//2
-            m1 = list(cursor.execute(f"SELECT amount FROM records {pred} LIMIT 1 OFFSET ?;", params+[mid1,]))[0][0]
-            m2 = list(cursor.execute(f"SELECT amount FROM records {pred} LIMIT 1 OFFSET ?;", params+[mid2,]))[0][0]
+            m1 = list(cursor.execute(f"SELECT amount FROM records {pred} ORDER BY amount LIMIT 1 OFFSET ?;", params+[mid1,]))[0][0]
+            m2 = list(cursor.execute(f"SELECT amount FROM records {pred} ORDER BY amount LIMIT 1 OFFSET ?;", params+[mid2,]))[0][0]
             total = (m1+m2)/2
     else:
         total = None

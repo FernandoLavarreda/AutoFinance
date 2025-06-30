@@ -8,7 +8,43 @@ import matplotlib.pyplot as plt
 
 plt.style.use("dark_background")
 
-def series(records:list[datetime, float], save:str, color:str="blue", absolute=False):
+
+def mseries(records:list[list[datetime, float]], *, save:str="", labels:list[str]=[], colors:list[str]=[], absolute:bool=False):
+    assert len(labels) == len(records), f"Labels should match number of series"
+    colors_ = {
+        "blue":"#158eb3",
+        "red":"#c91224",
+        "green":"#109123",
+        "golden":"#e3b019",
+    }
+    cp = []
+    for color in colors:
+        color = colors_[color] if color in colors_ else color
+        cp.append(color)
+    if not records:
+        return ""
+    fig = plt.figure()
+    ax = fig.subplots()
+    for i, record in enumerate(records):
+        if absolute:
+            ys = [abs(r[1]) for r in record]
+        else:
+            ys = [r[1] for r in record]
+        xs = np.asarray([r[0] for r in record], dtype="datetime64[s]")
+        if i < len(cp):
+            ax.plot(xs, ys, label=labels[i], color=cp[i])
+        else:
+            ax.plot(xs, ys, label=labels[i])
+    ax.tick_params(axis="x", labelrotation=75)
+    ax.legend(loc="upper left")
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Money")
+    fig.tight_layout()
+    fig.savefig(save)
+    return save
+
+
+def series(records:list[datetime, float], save:str, color:str="blue", absolute:bool=False, title:str=None):
     colors = {
         "blue":"#158eb3",
         "red":"#c91224",
@@ -31,6 +67,9 @@ def series(records:list[datetime, float], save:str, color:str="blue", absolute=F
         xs = np.asarray([r[0] for r in records], dtype="datetime64[s]")
         ax.plot(xs, ys, color=color)
     ax.tick_params(axis="x", labelrotation=75)
+    ax.set_title(title)
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Money")
     fig.tight_layout()
     fig.savefig(save)
     return save

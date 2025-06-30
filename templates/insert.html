@@ -44,10 +44,11 @@
 		<p class="h1">Insert Records</p>
 		<nav class="navbar navbar-expand-sm">
 				<ul class="navbar-nav">
-				<li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-				<li class="nav-item"><a class="nav-link active" href="/insert">Insert</a></li>
-				<li class="nav-item"><a class="nav-link" href="/delete">Delete</a></li>
-				<li class="nav-item"><a class="nav-link" href="/see">See</a></li>
+				<li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">Home</a></li>
+				<li class="nav-item"><a class="nav-link active" href="{{ url_for('insert')}} ">Insert</a></li>
+				<li class="nav-item"><a class="nav-link" href="{{ url_for('delete')}} ">Delete</a></li>
+				<li class="nav-item"><a class="nav-link" href="{{ url_for('custom')}} ">Custom</a></li>
+				<li class="nav-item"><a class="nav-link" href="{{ url_for('see')}} ">All</a></li>
 				</ul>
 		</nav>
 		<hr>
