@@ -10,6 +10,7 @@ env/
 #Tests
 .pytest_cache/
 tests/
+test.py
 
 
 #Build
