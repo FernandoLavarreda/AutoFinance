@@ -17,6 +17,7 @@ build/
 dist/
 *.spec
 *.iss
+*.sh
 
 
 #Secrets
