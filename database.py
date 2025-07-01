@@ -3,7 +3,7 @@
 
 import os
 import sqlite3 as sql
-from datetime import datetime
+from datetime import datetime,timedelta
 from dataclasses import dataclass
 from typing import Iterable, ClassVar
 
@@ -174,8 +174,91 @@ def daily_flow(cursor, **kwargs):
     return list(total)
 
 
+def monthly_flow(cursor, force_end_date:datetime=None, **kwargs):
+    #Required since it's possible a month may not register any transactions
+    pred, params = apply_filters(cursor=cursor, **kwargs)
+    total = cursor.execute(f"SELECT strftime('%Y-%m', records.date),SUM(amount) FROM records {pred} GROUP BY strftime('%Y-%m', records.date) ORDER BY date(records.date);", params)
+    flows = list(total)
+    actual_flows = []
+    if flows:
+        start_date = datetime.strptime(flows[0][0], "%Y-%m")
+        if type(force_end_date) != type(None):
+            end_date = force_end_date
+            assert end_date >= start_date, f"Forced end date must be equal or greater than start date"
+        else:
+            end_date = datetime.strptime(flows[-1][0], "%Y-%m")
+        month_value = {flow[0]:flow[1] for flow in flows}
+        actual_flows.append((flows[0][0], flows[0][1]))
+        while start_date.year != end_date.year or start_date.month != end_date.month:
+            start_date+=timedelta(days=31)
+            start_date = start_date-timedelta(days=start_date.day-1)
+            fm = start_date.strftime("%Y-%m")
+            val = 0
+            if fm in month_value:
+                val = month_value[fm]
+            actual_flows.append((fm,val))
+    return actual_flows
+
+
+def monthly_flow_mean(cursor, force_end_date:datetime=None, **kwargs):
+    mean = None
+    mflow = monthly_flow(cursor, force_end_date=force_end_date, **kwargs)
+    if mflow:
+        mean = sum([m[1] for m in mflow])/len(mflow)
+    return mean
+
+
+def monthly_flow_max(cursor, force_end_date:datetime=None, **kwargs):
+    mflow = monthly_flow(cursor, force_end_date=force_end_date, **kwargs)
+    max_ = None
+    if mflow:
+        max_ = max([m[1] for m in mflow])
+    return max_
+
+
+def monthly_flow_min(cursor, force_end_date:datetime=None, **kwargs):
+    mflow = monthly_flow(cursor, force_end_date=force_end_date, **kwargs)
+    min_ = None
+    if mflow:
+        min_ = min([m[1] for m in mflow])
+    return min_
+
+
+def monthly_flow_var(cursor, force_end_date:datetime=None, **kwargs):
+    mflow = monthly_flow(cursor, force_end_date=force_end_date, **kwargs)
+    var = None
+    if mflow:
+        data = [m[1] for m in mflow]
+        mean = sum(data)/len(data)
+        var = sum([(d-mean)**2 for d in data])/len(data)
+    return var
+
+
+def monthly_flow_sd(cursor, force_end_date:datetime=None, **kwargs):
+    var = monthly_flow_var(cursor, force_end_date=force_end_date, **kwargs)
+    sd = None
+    if var:
+        sd = var**0.5
+    return sd
+
+
+def monthly_flow_median(cursor, force_end_date:datetime=None, **kwargs):
+    median = None
+    mflow = monthly_flow(cursor, force_end_date=force_end_date, **kwargs)
+    if mflow:
+        data = sorted([m[1] for m in mflow])
+        if len(mflow)%2:
+            index = len(data)//2
+            median = data[index]
+        else:
+            left = len(data)//2-1
+            right = len(data)//2
+            median = (data[left]+data[right])/2
+    return median
+
+
 def cumulative(cursor, **kwargs):
-    records = daily_flow(cursor, **kwargs)
+    records = monthly_flow(cursor, **kwargs)
     acumulated = []
     if records:
         acumulated.append(records[0])
@@ -218,6 +301,12 @@ def get_var(cursor, **kwargs):
 def get_std(cursor, **kwargs):
     pred, params = apply_filters(cursor=cursor, **kwargs)
     total = cursor.execute(f"SELECT sqrt(SUM(pow(amount,2))/COUNT(amount)-pow(SUM(amount)/COUNT(amount),2)) FROM records {pred};", params)
+    return list(total)[0][0]
+
+
+def get_count(cursor, **kwargs):
+    pred, params = apply_filters(cursor=cursor, **kwargs)
+    total = cursor.execute(f"SELECT COUNT(amount) FROM records {pred};", params)
     return list(total)[0][0]
 
 
