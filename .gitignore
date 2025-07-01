@@ -16,6 +16,7 @@ test.py
 #Build
 build/
 dist/
+static/
 *.spec
 *.iss
 *.sh
