@@ -3,9 +3,9 @@
 
 import os
 import sqlite3 as sql
-from datetime import datetime,timedelta
 from dataclasses import dataclass
 from typing import Iterable, ClassVar
+from datetime import datetime,timedelta
 
 
 @dataclass
@@ -103,17 +103,17 @@ def date_predicate(start:datetime=None, end:datetime=None):
     predicate = ""
     if type(start) != type(None) and type(end) != type(None):
         assert start<=end, f"Start must be before or equal to end date"
-        predicate = "date(records.date)>=? AND date(records.date)<=?"
-        params = [start, end]
+        predicate = "records.date>=? AND records.date<=?"
+        params = [start.strftime("%F"), end.strftime("%F")]
     elif type(start) == type(end):
         predicate = ""
         params = []
     elif type(start) != type(None):
-        predicate = "date(records.date)>=?"
-        params = [start,]
+        predicate = "records.date>=?"
+        params = [start.strftime("%F"),]
     else:
-        predicate = "date(records.date)<=?"
-        params = [end,]
+        predicate = "records.date<=?"
+        params = [end.strftime("%F"),]
     return predicate, params
 
 
@@ -170,14 +170,14 @@ def apply_filters(*, cursor:sql.Cursor=None, select:str="", type_:str="", descri
 
 def daily_flow(cursor, **kwargs):
     pred, params = apply_filters(cursor=cursor, **kwargs)
-    total = cursor.execute(f"SELECT date(records.date),SUM(amount) FROM records {pred} GROUP BY records.date ORDER BY date(records.date);", params)
+    total = cursor.execute(f"SELECT date(records.date),SUM(amount) FROM records {pred} GROUP BY records.date ORDER BY records.date;", params)
     return list(total)
 
 
 def monthly_flow(cursor, force_end_date:datetime=None, **kwargs):
     #Required since it's possible a month may not register any transactions
     pred, params = apply_filters(cursor=cursor, **kwargs)
-    total = cursor.execute(f"SELECT strftime('%Y-%m', records.date),SUM(amount) FROM records {pred} GROUP BY strftime('%Y-%m', records.date) ORDER BY date(records.date);", params)
+    total = cursor.execute(f"SELECT strftime('%Y-%m', records.date),SUM(amount) FROM records {pred} GROUP BY strftime('%Y-%m', records.date) ORDER BY records.date;", params)
     flows = list(total)
     actual_flows = []
     if flows:
@@ -274,15 +274,15 @@ def sum_sign(cursor, **kwargs):
     return list(total)[0][0]
     
     
-def get_max(cursor, **kwargs):
+def get_max(cursor, limit=1, **kwargs):
     pred, params = apply_filters(cursor=cursor, **kwargs)
-    total = cursor.execute(f"SELECT amount,types.type,description,date FROM records LEFT JOIN types ON records.type=types.id {pred} ORDER BY amount DESC LIMIT 1;", params)
+    total = cursor.execute(f"SELECT amount,types.type,description,date FROM records LEFT JOIN types ON records.type=types.id {pred} ORDER BY amount DESC LIMIT ?;", params+[limit,])
     return list(total)
     
 
-def get_min(cursor, **kwargs):
+def get_min(cursor, limit=1, **kwargs):
     pred, params = apply_filters(cursor=cursor, **kwargs)
-    total = cursor.execute(f"SELECT amount,types.type,description,date FROM records LEFT JOIN types ON records.type=types.id {pred} ORDER BY amount ASC LIMIT 1;", params)
+    total = cursor.execute(f"SELECT amount,types.type,description,date FROM records LEFT JOIN types ON records.type=types.id {pred} ORDER BY amount ASC LIMIT ?;", params+[limit,])
     return list(total)
     
 
