@@ -21,7 +21,7 @@ def mseries(records:list[list[datetime, float]], *, save:str="", labels:list[str
     for color in colors:
         color = colors_[color] if color in colors_ else color
         cp.append(color)
-    if not records:
+    if not records or (sum([len(r) for r in records]) == 0):
         return ""
     fig = plt.figure()
     ax = fig.subplots()
@@ -44,7 +44,7 @@ def mseries(records:list[list[datetime, float]], *, save:str="", labels:list[str
     return save
 
 
-def series(records:list[datetime, float], save:str, color:str="blue", absolute:bool=False, title:str=None):
+def series(records:list[datetime, float], save:str, color:str="blue", absolute:bool=False, title:str=None, scatter:bool=False):
     colors = {
         "blue":"#158eb3",
         "red":"#c91224",
@@ -65,7 +65,10 @@ def series(records:list[datetime, float], save:str, color:str="blue", absolute:b
         else:
             ys = [r[1] for r in records]
         xs = np.asarray([r[0] for r in records], dtype="datetime64[s]")
-        ax.plot(xs, ys, color=color)
+        if scatter:
+            ax.scatter(xs, ys, color=color)
+        else:
+            ax.plot(xs, ys, color=color)
     ax.tick_params(axis="x", labelrotation=75)
     ax.set_title(title)
     ax.set_xlabel("Date")
