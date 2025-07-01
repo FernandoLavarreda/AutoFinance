@@ -55,10 +55,12 @@
 		<form method=post>
 		<div class="main-container">
 				<div class="field">
-						<div class="label" for="type">Type</div>
+						<div class="label" for="type_">Type</div>
 						<div>
-						<select class="form-control" name="type" id="type">
-						<option value="se">se</option>
+						<select class="form-control" name="type_" id="type_">
+						{% autoescape false %}
+						{{options}}
+						{% endautoescape %}
 						</select></div>
 				</div>
 				<div class="field">
@@ -67,7 +69,7 @@
 				</div>
 				<div class="field">
 						<div class="label" for="amount">Amount</div>
-						<div><input class="form-control" type="number" name="amount" id="amount"></div>
+						<div><input class="form-control" type="decimal" name="amount" id="amount"></div>
 				</div>
 				<div class="field">
 						<div class="label" for="date">Date</div>
@@ -80,6 +82,9 @@
 				<td><input class="btn btn-success" type="submit" value="register"></td>
 		</table>
 		</form>
+		{% autoescape false %}
+		{{ msg }}
+		{% endautoescape %}
 		</div>
 		</body>
 </html>

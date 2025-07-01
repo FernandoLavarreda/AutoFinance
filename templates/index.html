@@ -11,10 +11,10 @@
 		<div class="row">
 			<div class="col"><p class="h1 fw-bold">[AutoFinance]</p></div>
 			<div class="col">
-					<form>
+					<form method=post>
 					<div class="row">
 							<div class="col">
-							<input style="border-style:none;" class="form-control"type="password"  id="password" name="password">
+							<input style="border-style:none;" class="form-control" type="password"  id="password" name="password">
 							</div>
 							<div class="col">
 							<input class="btn btn-dark" type="submit" value="auth">
@@ -33,7 +33,24 @@
 				</ul>
 		</nav>
 		<hr>
-		<p class="h3 fw-bold">Insights</p>
+		<p class="h2 fw-bold">Insights</p>
+		<div class="row">
+				 <div class="col"><p class="h6"><b>Records:&nbsp&nbsp</b>{{ records }}</p></div>
+		  <div class="col"></div>
+		</div>
+		<br>
+		<br>
+		<div class="row">
+		  <div class="col"><p class="h3">Flows</p></div>
+		  <div class="col"></div>
+		</div>
+		<div class="row">
+		<p></p>
+		</div>
+		<div class="row">
+		  <div class="col"><p class="h4">Total</p></div>
+		  <div class="col"></div>
+		</div>
 		<div class="row">
 		  <div class="col"></div>
 		  <div class="col"><p class="h6">Inflow</p></div>
@@ -52,8 +69,107 @@
 		  	<div class="col"><p class="h6 fw-bold text-info">{{ netflow }}</p></div>
 		  <div class="col"></div>
 		</div>
+		<br>
+		<div class="row">
+		  <div class="col"><p class="h4">Monthly</p></div>
+		  <div class="col"></div>
+		</div>
+				<div class="row">
+					<div class="col">
+						<div class="row">
+						  <div class="col"><p class="h4 text-success">Inflow</p></div>
+						  <div class="col"></div>
+						</div>
+						<div class="row">
+						  <div class="col"><p class="h6 fw-bold">Median</p></div>
+						  <div class="col"><p class="h6">{{ medianinf }}</p></div>
+						</div>
+						<div class="row">
+						  <div class="col"><p class="h6 fw-bold">Mean</p></div>
+						  <div class="col"><p class="h6">{{ meaninf }}</p></div>
+						</div>
+						<div class="row">
+						  <div class="col"><p class="h6 fw-bold">SD</p></div>
+						  <div class="col"><p class="h6">{{ stdinf }}</p></div>
+						</div>
+						<div class="row">
+						  <div class="col"><p class="h6 fw-bold">Max</p></div>
+						  <div class="col"><p class="h6">{{ maxinf }}</p></div>
+						</div>
+					</div>
+					<div class="col">
+						<div class="row">
+						  <div class="col"><p class="h4 text-danger">Outflow</p></div>
+						  <div class="col"></div>
+						</div>
+						<div class="row">
+						  <div class="col"><p class="h6 fw-bold">Median</p></div>
+						  <div class="col"><p class="h6">{{ medianou }}</p></div>
+						</div>
+						<div class="row">
+						  <div class="col"><p class="h6 fw-bold">Mean</p></div>
+						  <div class="col"><p class="h6">{{ meanou }}</p></div>
+						</div>
+						<div class="row">
+						  <div class="col"><p class="h6 fw-bold">SD</p></div>
+						  <div class="col"><p class="h6">{{ stdou }}</p></div>
+						</div>
+						<div class="row">
+						  <div class="col"><p class="h6 fw-bold">Max</p></div>
+						  <div class="col"><p class="h6">{{ maxou }}</p></div>
+						</div>
+					</div>
+				</div>
+				<br>
+				<div class="row">
+					<div class="col">
+						<div class="row">
+						  <div class="col"><p class="h4 text-info">Netflow</p></div>
+						  <div class="col"></div>
+						  <div class="col"></div>
+						  <div class="col"></div>
+						</div>
+						<div class="row">
+						  <div class="col"><p class="h6 fw-bold">Median</p></div>
+						  <div class="col"><p class="h6">{{ mediannet }}</p></div>
+						  <div class="col"></div>
+						  <div class="col"></div>
+						</div>
+						<div class="row">
+						  <div class="col"><p class="h6 fw-bold">Mean</p></div>
+						  <div class="col"><p class="h6">{{ meannet }}</p></div>
+						  <div class="col"></div>
+						  <div class="col"></div>
+						</div>
+						<div class="row">
+						  <div class="col"><p class="h6 fw-bold">SD</p></div>
+						  <div class="col"><p class="h6">{{ stdnet }}</p></div>
+						  <div class="col"></div>
+						  <div class="col"></div>
+						</div>
+						<div class="row">
+						  <div class="col"><p class="h6 fw-bold">Max</p></div>
+						  <div class="col"><p class="h6">{{ maxnet }}</p></div>
+						  <div class="col"></div>
+						  <div class="col"></div>
+						</div>
+						<div class="row">
+						  <div class="col"><p class="h6 fw-bold">Min</p></div>
+						  <div class="col"><p class="h6">{{ minnet }}</p></div>
+						  <div class="col"></div>
+						  <div class="col"></div>
+						</div>
+					</div>
+				</div>
 			<br>
 			<br>
+				<div class="row">
+				  <div class="col"><p class="h3">Types</p></div>
+				  <div class="col"></div>
+				</div>
+				<div class="row">
+				<p></p>
+				</div>
 				<div class="row">
 					<div class="col">
 						<div class="row">
@@ -69,7 +185,7 @@
 						  <div class="col"><p class="h6">{{ meanin }}</p></div>
 						</div>
 						<div class="row">
-						  <div class="col"><p class="h6 fw-bold">Std</p></div>
+						  <div class="col"><p class="h6 fw-bold">SD</p></div>
 						  <div class="col"><p class="h6">{{ stdin }}</p></div>
 						</div>
 						<div class="row">
@@ -91,7 +207,7 @@
 						  <div class="col"><p class="h6">{{ meanne }}</p></div>
 						</div>
 						<div class="row">
-						  <div class="col"><p class="h6 fw-bold">Std</p></div>
+						  <div class="col"><p class="h6 fw-bold">SD</p></div>
 						  <div class="col"><p class="h6">{{ stdne }}</p></div>
 						</div>
 						<div class="row">
@@ -116,7 +232,7 @@
 						  <div class="col"><p class="h6">{{ meanpe }}</p></div>
 						</div>
 						<div class="row">
-						  <div class="col"><p class="h6 fw-bold">Std</p></div>
+						  <div class="col"><p class="h6 fw-bold">SD</p></div>
 						  <div class="col"><p class="h6">{{ stdpe }}</p></div>
 						</div>
 						<div class="row">
@@ -131,10 +247,10 @@
 						</div>
 						<div class="row">
 						  <div class="col"><p class="h6 fw-bold">Median</p></div>
-						  <div class="col"><p class="h6"></p>{{ medianinv }}</div>
+						  <div class="col"><p class="h6">{{ medianinv }}</p></div>
 						</div>
 						<div class="row">
-						  <div class="col"><p class="h6 fw-bold">Std</p></div>
+						  <div class="col"><p class="h6 fw-bold">SD</p></div>
 						  <div class="col"><p class="h6">{{ stdinv }}</p></div>
 						</div>
 						<div class="row">
@@ -169,7 +285,7 @@
 						  <div class="col"></div>
 						</div>
 						<div class="row">
-						  <div class="col"><p class="h6 fw-bold">Std</p></div>
+						  <div class="col"><p class="h6 fw-bold">SD</p></div>
 						  <div class="col"><p class="h6">{{ stdem }}</p></div>
 						  <div class="col"></div>
 						  <div class="col"></div>
@@ -185,7 +301,14 @@
 			<br>
 			<br>
 				<div class="row">
-				  <div class="col"><p class="h5">Cash Holdings</p></div>
+				  <div class="col"><p class="h3">Graphs</p></div>
+				  <div class="col"></div>
+				</div>
+				<div class="row">
+				<p></p>
+				</div>
+				<div class="row">
+				  <div class="col"><p class="h4">Cash Holdings</p></div>
 				  <div class="col"></div>
 				</div>
 				<div class="row">
@@ -193,7 +316,7 @@
 				</div>
 			<br>
 				<div class="row">
-				  <div class="col"><p class="h5">Cumulative Inflow/Outflow</p></div>
+				  <div class="col"><p class="h4">Cumulative Inflow/Outflow</p></div>
 				  <div class="col"></div>
 				</div>
 				<div class="row">
@@ -201,12 +324,12 @@
 				</div>
 			<br>
 				<div class="row">
-				  <div class="col"><p class="h5">Daily Flow</p></div>
+				  <div class="col"><p class="h4">Flows</p></div>
 				  <div class="col"></div>
 				  <div class="col"></div>
 				</div>
 				<div class="row">
-				  <img src="{{ url_for('static', filename=daily)}}" class="rounded" alt="Historic data">
+				  <img src="{{ url_for('static', filename=monthly_flow)}}" class="rounded" alt="Historic data">
 				</div>
 		</div>
 		</body>
