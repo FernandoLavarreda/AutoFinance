@@ -52,7 +52,7 @@
 				</ul>
 		</nav>
 		<hr>
-		<form method=post>
+		<form method=post enctype="multipart/form-data">
 		<div class="main-container">
 				<div class="field">
 						<div class="label" for="type_">Type</div>
@@ -78,8 +78,13 @@
 		</div>
 		<br>
 		<table>
+				<tr>
+				<td><input class="form-control" type="file" id="file" name="file"></td>
+				</tr>
+				<tr>
 				<td><input class="form-control" type="password" id="password" name="password"></td>
 				<td><input class="btn btn-success" type="submit" value="register"></td>
+				</tr>
 		</table>
 		</form>
 		{% autoescape false %}

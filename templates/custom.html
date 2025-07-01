@@ -36,7 +36,6 @@
 				</style>
 				<script>
 						function setDateForm() {
-									document.getElementById('start').valueAsDate = new Date()
 									document.getElementById('end').valueAsDate = new Date()
 						};
 						window.onload = setDateForm;
@@ -82,7 +81,7 @@
 		</div>
 		<br>
 		<table>
-				<td><input class="form-control" type="password"></td>
+				<td><input class="form-control" type="password" name="password" id="password"></td>
 				<td><input class="btn btn-info" type="submit" value="register"></td>
 		</table>
 		</form>
@@ -106,7 +105,7 @@
 				<div class="row">
 				  <div class="col"></div>
 				  <div class="col"><p class="h6 fw-bold">Median</p></div>
-				  <div class="col"><p class="h6">{{ medianin }}</p></div>
+				  <div class="col"><p class="h6">{{ median }}</p></div>
 				  <div class="col"></div>
 				</div>
 				<div class="row">
