@@ -99,7 +99,7 @@ def insert():
         pwh.verify(passwd, request.form["password"])
     except Exception:
         return render_template("insert.html", msg=render.err("Incorrect Password"), options=options)
-    if "file" in request.files:
+    if "file" in request.files and request.files["file"].filename.strip():
         cn = sql.connect(DATABASE)
         cur = cn.cursor()
         try:
