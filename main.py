@@ -62,43 +62,45 @@ with app.app_context():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+    customization = {"page_name":"[AutoFinance]", "home":True}
     if request.method != "POST": 
-        return render_template("index2.html")
+        return render_template("index2.html", **customization)
     pwh = PasswordHasher()
     try:
         assert "password" in request.form, "" 
         pwh.verify(passwd, request.form["password"])
     except Exception:
-        return render_template("index2.html")
+        return render_template("index2.html", **customization)
     try:
         cn = sql.connect(DATABASE)
     except Exception:
-        return render_template("index2.html")
+        return render_template("index2.html", **customization)
     cleanup(statics)
     cur = cn.cursor()
     context = render.main_report(cur)
     cn.close()
-    return render_template("index.html", **context)
+    return render_template("index.html", **context, **customization)
 
 
 @app.route("/insert", methods=["GET", "POST"])
 def insert():
+    customization = {"addcss":True, "page_name":"Insert Records", "insert":True}
     try:
         cn = sql.connect(DATABASE)
     except Exception:
-        return render_template("insert.html")
+        return render_template("insert.html", **customization)
     cur = cn.cursor()
     options = render.list_types(cur)
     types = db.get_types(cursor=cur)
     cn.close()
     if request.method != "POST": 
-        return render_template("insert.html", options=options)
+        return render_template("insert.html", options=options, **customization)
     pwh = PasswordHasher()
     try:
         assert "password" in request.form, "" 
         pwh.verify(passwd, request.form["password"])
     except Exception:
-        return render_template("insert.html", msg=render.err("Incorrect Password"), options=options)
+        return render_template("insert.html", msg=render.err("Incorrect Password"), options=options, **customization)
     if "file" in request.files and request.files["file"].filename.strip():
         cn = sql.connect(DATABASE)
         cur = cn.cursor()
@@ -110,87 +112,90 @@ def insert():
             cn.commit()
             cn.close()
             return render_template("insert.html", options=options,\
-                                msg=render.success(f"Inserted: {len(records)} records"))
+                                msg=render.success(f"Inserted: {len(records)} records"), **customization)
         except Exception as e:
             print(e)
             sys.stdout.flush()
             cn.close()
             return render_template("insert.html", msg=render.err("Could not process file"),\
-                                   options=options)
+                                   options=options, **customization)
     try:
         record = read_inputs.read_insert(request.form, types=types)
     except Exception as e:
-        return render_template("insert.html", msg=render.err(str(e)), options=options)
+        return render_template("insert.html", msg=render.err(str(e)), options=options, **customization)
     cn = sql.connect(DATABASE)
     cur = cn.cursor()
     db.insert(cursor=cur, records=record)
     cn.commit()
     cn.close()
-    return render_template("insert.html", options=options, msg=render.success("Inserted record"))
+    return render_template("insert.html", options=options, msg=render.success("Inserted record"), **customization)
 
 
 @app.route("/delete", methods=["GET", "POST"])
 def delete():
+    customization = {"addcss":True, "page_name":"Delete Records", "delete":True}
     try:
         cn = sql.connect(DATABASE)
     except Exception:
-        return render_template("delete.html")
+        return render_template("delete.html", **customization)
     cur = cn.cursor()
     options = render.list_types(cur)
     cn.close()
     if request.method != "POST": 
-        return render_template("delete.html", options=options)
+        return render_template("delete.html", options=options, **customization)
     pwh = PasswordHasher()
     try:
         assert "password" in request.form, "" 
         pwh.verify(passwd, request.form["password"])
     except Exception:
-        return render_template("delete.html", msg=render.err("Incorrect Password"), options=options)
+        return render_template("delete.html", msg=render.err("Incorrect Password"), options=options, **customization)
     try:
         params = read_inputs.read_delete(request.form)
     except Exception as e:
-        return render_template("delete.html", msg=render.err(str(e)), options=options)
+        return render_template("delete.html", msg=render.err(str(e)), options=options, **customization)
     cn = sql.connect(DATABASE)
     cur = cn.cursor()
     db.delete(cursor=cur, **params)
     cn.commit()
     cn.close()
-    return render_template("delete.html", msg=render.success(f"Deleted record(s)"), options=options)
+    return render_template("delete.html", msg=render.success(f"Deleted record(s)"), options=options, **customization)
 
 
 @app.route("/custom", methods=["GET", "POST"])
 def custom():
+    customization = {"addcss":True, "page_name":"Custom Reports", "custom":True}
     try:
         cn = sql.connect(DATABASE)
     except Exception:
-        return render_template("custom2.html")
+        return render_template("custom2.html", **customization)
     cur = cn.cursor()
     options = render.list_types(cur)
     cn.close()
     if request.method != "POST": 
-        return render_template("custom2.html", options=options)
+        return render_template("custom2.html", options=options, **customization)
     pwh = PasswordHasher()
     try:
         assert "password" in request.form, "" 
         pwh.verify(passwd, request.form["password"])
     except Exception:
-        return render_template("custom2.html", msg=render.err("Incorrect Password"), options=options)
+        return render_template("custom2.html", msg=render.err("Incorrect Password"), options=options, **customization)
     try:
         params = read_inputs.read_custom(request.form)
     except Exception as e:
-        return render_template("custom2.html", msg=render.err(str(e)), options=options)
+        return render_template("custom2.html", msg=render.err(str(e)), options=options, **customization)
     cleanup(statics)
     cn = sql.connect(DATABASE)
     cur = cn.cursor()
     context = render.custom_report(cursor=cur, **params)
     cn.close()
-    return render_template("custom.html", options=options, **context)
+    return render_template("custom.html", options=options,  **customization, **context)
 
 
 @app.route("/all", methods=["GET", "POST"])
 def see():
+    customization = {"page_name":"See Records", "see":True}
     if request.method != "POST": 
-        return render_template("see.html")
+        return render_template("see.html", **customization)
     pwh = PasswordHasher()
     backup = False
     try:
@@ -201,11 +206,11 @@ def see():
             pwh.verify(passwd2, request.form["password"])
             backup = True
     except Exception:
-        return render_template("see.html", table=render.err("Incorrect Password"))
+        return render_template("see.html", table=render.err("Incorrect Password"), **customization)
     try:
         cn = sql.connect(DATABASE)
     except Exception:
-        return render_template("see.html")
+        return render_template("see.html", **customization)
     cur = cn.cursor()
     if backup:
         file = render.backup(cur)
@@ -213,7 +218,7 @@ def see():
         return send_file(file, as_attachment=True, download_name=f"backup_{datetime.today().strftime('%F')}.csv")
     context = render.table(cur)
     cn.close()
-    return render_template("see.html", table=context)
+    return render_template("see.html", table=context, **customization)
 
 
 @app.route("/<invalid>", methods=["GET"])

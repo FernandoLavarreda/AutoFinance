@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+				<head>
+				<title>AutoFinance</title>
+				<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+				<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+				<meta name="viewport" content="width=device-width, initial-scale=1">
+				<style>
+				{% if addcss is defined %}
+				.main-container{
+					display:flex;
+					flex-direction:row;
+					flex-wrap:wrap;
+				}
+
+				.main-container div{
+					color: #ffffff;
+					text-align: left;
+					padding: 2px 4px;
+				}
+
+				.label{
+					border-radius: 2px;
+					background-color: #0f8580;
+				}
+				
+				.field {
+					width:51%;
+				 }
+
+				.field div{
+					width:100%;
+					height:40%;
+				}
+				{% endif %}
+				{% block css %}
+				{% endblock %}
+				</style>
+				<script>
+				{% block scripts %}
+				{% endblock %}
+				</script>
+				</head>
+				<body data-bs-theme="dark">
+				<div class="container-fluid">
+				<div class="row">
+						<div class="col"><p class="h1">{{ page_name }}</p></div>
+						<div class="col">
+						{% block pass %}
+						{% endblock %}
+						</div>
+				</div>
+				<nav class="navbar navbar-expand-sm">
+						<ul class="navbar-nav">
+						<li class="nav-item"><a class="nav-link {% if home is defined %} active {% endif %}" href="{{ url_for('home') }}">Home</a></li>
+						<li class="nav-item"><a class="nav-link {% if insert is defined %} active {% endif %}" href="{{ url_for('insert')}} ">Insert</a></li>
+						<li class="nav-item"><a class="nav-link {% if delete is defined %} active {% endif %}" href="{{ url_for('delete')}} ">Delete</a></li>
+						<li class="nav-item"><a class="nav-link {% if custom is defined %} active {% endif %}" href="{{ url_for('custom')}} ">Custom</a></li>
+						<li class="nav-item"><a class="nav-link {% if see is defined %} active {% endif %}" href="{{ url_for('see')}} ">All</a></li>
+						</ul>
+				</nav>
+				<hr>
+				{% block body %}
+				{% endblock %}
+				</body>
+</html>
